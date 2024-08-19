@@ -1,15 +1,15 @@
 ---
 AWSTemplateFormatVersion: '2010-09-09'
-Description: Alvaria WFM Agent Productivity Report Generator integration for Amazon
-  Connect (qs-1ohjcidec)
+Description: Aspect Workforce Agent Productivity Report Generator integration for Amazon
+  Connect
 Metadata:
   AWS::CloudFormation::Interface:
     ParameterGroups:
     - Label:
-        default: Alvaria WFM Configuration
+        default: Aspect Workforce Configuration
       Parameters:
       - FirehoseStreamName
-      - AlvariaApDataS3Prefix
+      - ApDataS3Prefix
       - StatusSeparator
       - SignedOutStatuses
     - Label:
@@ -34,9 +34,9 @@ Metadata:
         - QSS3KeyPrefix
     ParameterLabels:
       FirehoseStreamName:
-        default: Alvaria Kinesis Firehose Stream Name
-      AlvariaApDataS3Prefix:
-        default: Alvaria WFM Report Prefix
+        default: Kinesis Firehose Stream Name
+      ApDataS3Prefix:
+        default: Agent Productivity Report Prefix
       StatusSeparator:
         default: Agent Status Name Separator
       SignedOutStatuses:
@@ -79,10 +79,10 @@ Parameters:
       If you specify a different stream name, be sure to update the WFM Adapter configuration 
       for the corresponding data source to match your stream name, in the Firehose Report Mapping data
       source parameter.  Consult the WFM Adapter help for more information.
-  AlvariaApDataS3Prefix:
+  ApDataS3Prefix:
     Type: String
     Default: OUTPUT/
-    Description: Enter the prefix for Alvaria WFM Agent Productivity reports written
+    Description: Enter the prefix for Agent Productivity reports written
       to S3.  You should configure the corresponding WFM Adapter data source to match
       this value, in the Firehose Report Root Path data source parameter.
   StatusSeparator:
@@ -106,7 +106,7 @@ Parameters:
       instance.
   ConnectS3Prefix:
     Type: String
-    Default: connect/directory/Reports/Alvaria/
+    Default: connect/directory/Reports/Aspect/
     Description: Enter the prefix under which the exported reports read by WFM Adapter
       will be exported, in the Exported reports bucket of your Amazon Connect instance.
   ConnectS3KmsArn:
@@ -158,7 +158,7 @@ Parameters:
     ConstraintDescription: Quick Start bucket name can include numbers, lowercase
       letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen
       (-).
-    Default: aws-ia
+    Default: aspect-workforce
     Description: S3 bucket name for the Quick Start assets. This string can include
       numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start
       or end with a hyphen (-).
@@ -171,7 +171,7 @@ Parameters:
     AllowedPattern: ^[0-9a-zA-Z-/]*$
     ConstraintDescription: Quick Start key prefix can include numbers, lowercase letters,
       uppercase letters, hyphens (-), and forward slash (/).
-    Default: cfn-ps-connect-integration-aspect-wfm/
+    Default: aspect-workforce-connect-integration/
     Description: S3 key prefix for the Quick Start assets. Quick Start key prefix
       can include numbers, lowercase letters, uppercase letters, hyphens (-), and
       forward slash (/).
@@ -183,7 +183,7 @@ Rules:
         Fn::Not:
         - Fn::Equals:
           - Ref: ConnectS3Prefix
-          - connect/directory/Reports/Alvaria/
+          - connect/directory/Reports/Aspect/
       AssertDescription: Replace directory with the directory name of your Amazon
         Connect instance.
   RoleRequiredParameters:
@@ -195,7 +195,7 @@ Rules:
     - Assert: !Not [!Equals [!Ref ExternalId, '']]
       AssertDescription: External ID is required when Authorization Mode is Role.
 Conditions:
-  UsingDefaultBucket: !Equals [!Ref QSS3BucketName, 'aws-ia']
+  UsingDefaultBucket: !Equals [!Ref QSS3BucketName, 'aspect-workforce']
   HasS3KmsKey: !Not [!Equals [!Ref ConnectS3KmsArn, '']]
   HasKinesisKmsKey: !Not [!Equals [!Ref AgentEventStreamKmsArn, '']]
   CreateUser: !Equals [!Ref AuthorizationMode, 'User']
@@ -261,7 +261,7 @@ Resources:
           - s3:PutObject
           Resource:
           - Fn::Sub: arn:${AWS::Partition}:s3:::${S3Bucket}
-          - Fn::Sub: arn:${AWS::Partition}:s3:::${S3Bucket}/${AlvariaApDataS3Prefix}*
+          - Fn::Sub: arn:${AWS::Partition}:s3:::${S3Bucket}/${ApDataS3Prefix}*
       Roles:
       - Ref: FirehoseRole
   FirehoseLogsPolicy:
@@ -293,7 +293,7 @@ Resources:
           SizeInMBs: 5
         CompressionFormat: UNCOMPRESSED
         Prefix:
-          Fn::Sub: ${AlvariaApDataS3Prefix}
+          Fn::Sub: ${ApDataS3Prefix}
         RoleARN:
           Fn::GetAtt: FirehoseRole.Arn
   UpdateLambdaRole:
@@ -466,7 +466,7 @@ Resources:
           - s3:ListBucket
           Resource:
           - Fn::GetAtt: S3Bucket.Arn
-          - Fn::Sub: ${S3Bucket.Arn}/${AlvariaApDataS3Prefix}*
+          - Fn::Sub: ${S3Bucket.Arn}/${ApDataS3Prefix}*
           - Fn::Sub: arn:${AWS::Partition}:s3:::${ConnectS3Bucket}
           - Fn::Sub: arn:${AWS::Partition}:s3:::${ConnectS3Bucket}/${ConnectS3Prefix}*
   WFMAdapterDecryptS3Policy:

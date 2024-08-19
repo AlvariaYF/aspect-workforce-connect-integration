@@ -1,14 +1,14 @@
 ---
 AWSTemplateFormatVersion: '2010-09-09'
-Description: Alvaria WFM Agent Productivity Report Generator integration and Real-Time Adherence integration (qs-1s0oq6gs2)
+Description: Aspect Workforce Agent Productivity Report Generator integration and Real-Time Adherence integration
 Metadata:
   AWS::CloudFormation::Interface:
     ParameterGroups:
     - Label:
-        default: Alvaria WFM Configuration
+        default: Aspect Workforce Configuration
       Parameters:
       - FirehoseStreamName
-      - AlvariaApDataS3Prefix
+      - ApDataS3Prefix
       - StatusSeparator
       - SignedOutStatuses
       - NumSQSQueues
@@ -38,9 +38,9 @@ Metadata:
       - QSS3KeyPrefix
     ParameterLabels:
       FirehoseStreamName:
-        default: Alvaria Kinesis Firehose Stream Name
-      AlvariaApDataS3Prefix:
-        default: Alvaria WFM Report Prefix
+        default: Kinesis Firehose Stream Name
+      ApDataS3Prefix:
+        default: Agent Productivity Report Prefix
       StatusSeparator:
         default: Agent Status Name Separator
       SignedOutStatuses:
@@ -93,10 +93,10 @@ Parameters:
       If you specify a different stream name, be sure to update the WFM Adapter configuration 
       for the corresponding data source to match your stream name, in the Firehose Report Mapping data
       source parameter.  Consult the WFM Adapter help for more information.
-  AlvariaApDataS3Prefix:
+  ApDataS3Prefix:
     Type: String
     Default: OUTPUT/
-    Description: Enter the prefix for Alvaria WFM Agent Productivity reports written
+    Description: Enter the prefix for Agent Productivity reports written
       to S3.  You should configure the corresponding WFM Adapter data source to match
       this value, in the Firehose Report Root Path data source parameter.
   StatusSeparator:
@@ -139,7 +139,7 @@ Parameters:
     Description: Enter the name of the Exported reports S3 bucket of your Amazon Connect instance.
   ConnectS3Prefix:
     Type: String
-    Default: connect/directory/Reports/Alvaria/
+    Default: connect/directory/Reports/Aspect/
     Description: Enter the prefix under which the exported reports read by WFM Adapter will be
       exported, in the Exported reports bucket of your Amazon Connect instance.
   ConnectS3KmsArn:
@@ -213,7 +213,7 @@ Parameters:
     ConstraintDescription: Quick Start bucket name can include numbers, lowercase
       letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen
       (-).
-    Default: aws-ia
+    Default: aspect-workforce
     Description: S3 bucket name for the Quick Start assets. This string can include
       numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start
       or end with a hyphen (-).
@@ -226,7 +226,7 @@ Parameters:
     AllowedPattern: ^[0-9a-zA-Z-/]*$
     ConstraintDescription: Quick Start key prefix can include numbers, lowercase letters,
       uppercase letters, hyphens (-), and forward slash (/).
-    Default: cfn-ps-connect-integration-aspect-wfm/
+    Default: aspect-workforce-connect-integration/
     Description: S3 key prefix for the Quick Start assets. Quick Start key prefix
       can include numbers, lowercase letters, uppercase letters, hyphens (-), and
       forward slash (/).
@@ -238,7 +238,7 @@ Rules:
         Fn::Not:
         - Fn::Equals:
           - Ref: ConnectS3Prefix
-          - connect/directory/Reports/Alvaria/
+          - connect/directory/Reports/Aspect/
       AssertDescription: Replace directory with the directory name of your Amazon Connect instance.
   RoleRequiredParameters:
     RuleCondition: !Equals [!Ref AuthorizationMode, 'Role']
@@ -249,7 +249,7 @@ Rules:
     - Assert: !Not [!Equals [!Ref ExternalId, '']]
       AssertDescription: External ID is required when Authorization Mode is Role.
 Conditions:
-  UsingDefaultBucket: !Equals [!Ref QSS3BucketName, 'aws-ia']
+  UsingDefaultBucket: !Equals [!Ref QSS3BucketName, 'aspect-workforce']
 Resources:
   ApStack:
     Type: AWS::CloudFormation::Stack
@@ -261,7 +261,7 @@ Resources:
             S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
       Parameters:
         FirehoseStreamName: !Ref FirehoseStreamName
-        AlvariaApDataS3Prefix: !Ref AlvariaApDataS3Prefix
+        ApDataS3Prefix: !Ref ApDataS3Prefix
         StatusSeparator: !Ref StatusSeparator
         SignedOutStatuses: !Ref SignedOutStatuses
         ConnectS3Bucket: !Ref ConnectS3Bucket
