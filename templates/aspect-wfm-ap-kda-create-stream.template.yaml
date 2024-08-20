@@ -174,16 +174,12 @@ Resources:
   CreateStreamStack:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL:
-        !Sub
-          - 'https://${DeploymentS3Bucket}.s3.${AWS::URLSuffix}/${DeploymentS3KeyPrefix}templates/create-kinesis-stream.template.yaml'
+      TemplateURL: !Sub 'https://${DeploymentS3Bucket}.s3.${AWS::URLSuffix}/${DeploymentS3KeyPrefix}templates/create-kinesis-stream.template.yaml'
   WorkloadStack:
     DependsOn: CreateStreamStack
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL:
-        !Sub
-          - 'https://${DeploymentS3Bucket}.s3.${AWS::URLSuffix}/${DeploymentS3KeyPrefix}templates/aspect-wfm-ap-kda.template.yaml'
+      TemplateURL: !Sub 'https://${DeploymentS3Bucket}.s3.${AWS::URLSuffix}/${DeploymentS3KeyPrefix}templates/aspect-wfm-ap-kda.template.yaml'
       Parameters:
         FirehoseStreamName: !Ref FirehoseStreamName
         ApDataS3Prefix: !Ref ApDataS3Prefix

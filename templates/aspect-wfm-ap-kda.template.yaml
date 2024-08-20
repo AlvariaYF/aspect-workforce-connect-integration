@@ -199,9 +199,7 @@ Resources:
   CopyZipsTemplate:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL:
-        !Sub
-          - 'https://${DeploymentS3Bucket}.s3.${AWS::URLSuffix}/${DeploymentS3KeyPrefix}submodules/lambda-copyzips/templates/copy-zips.template.yaml'
+      TemplateURL: !Sub 'https://${DeploymentS3Bucket}.s3.${AWS::URLSuffix}/${DeploymentS3KeyPrefix}submodules/lambda-copyzips/templates/copy-zips.template.yaml'
       Parameters:
         QSS3BucketName: !Ref DeploymentS3BucketName
         QSS3BucketRegion: 'us-east-1'
@@ -429,10 +427,7 @@ Resources:
         Statement:
         - Effect: Allow
           Principal:
-            AWS: 
-              !Sub
-                - "arn:aws:iam::${accountId}:root"
-                - accountId: !Ref SourceAwsAccountId
+            AWS: !Sub "arn:aws:iam::${SourceAwsAccountId}:root"
           Action: sts:AssumeRole
           Condition: 
             StringEquals:

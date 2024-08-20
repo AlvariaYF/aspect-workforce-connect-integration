@@ -144,13 +144,11 @@ Resources:
   CreateStreamStack:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: !Sub
-        - "https://${DeploymentS3Bucket}.s3.${AWS::URLSuffix}/${DeploymentS3KeyPrefix}templates/create-kinesis-stream.template.yaml"
+      TemplateURL: !Sub "https://${DeploymentS3Bucket}.s3.${AWS::URLSuffix}/${DeploymentS3KeyPrefix}templates/create-kinesis-stream.template.yaml"
   WorkloadStack:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: !Sub
-        - "https://${DeploymentS3Bucket}.s3.${AWS::URLSuffix}/${DeploymentS3KeyPrefix}templates/aspect-wfm-rta.template.yaml"
+      TemplateURL: !Sub "https://${DeploymentS3Bucket}.s3.${AWS::URLSuffix}/${DeploymentS3KeyPrefix}templates/aspect-wfm-rta.template.yaml"
       Parameters:
         NumSQSQueues: !Ref NumSQSQueues
         LambdaConfigLocation: !Ref LambdaConfigLocation
