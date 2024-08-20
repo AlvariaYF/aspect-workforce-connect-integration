@@ -29,11 +29,10 @@ Metadata:
         - SourceAwsAccountId
         - ExternalId
     - Label:
-        default: AWS Quick Start configuration
+        default: Deployment Configuration
       Parameters:
-      - QSS3BucketName
-      - QSS3BucketRegion
-      - QSS3KeyPrefix
+      - DeploymentS3BucketName
+      - DeploymentS3KeyPrefix
     ParameterLabels:
       FirehoseStreamName:
         default: Kinesis Firehose Stream Name
@@ -65,12 +64,10 @@ Metadata:
         default: Source AWS Account ID
       ExternalId:
         default: External ID
-      QSS3BucketName:
-        default: Quick Start S3 Bucket Name
-      QSS3BucketRegion:
-        default: Quick Start S3 bucket region
-      QSS3KeyPrefix:
-        default: Quick Start S3 Key Prefix
+      DeploymentS3BucketName:
+        default: Deployment S3 Bucket Name
+      DeploymentS3KeyPrefix:
+        default: Deployment S3 Key Prefix
 Parameters:
   FirehoseStreamName:
     Type: String
@@ -192,26 +189,22 @@ Parameters:
       Authorization Mode is Role, the roles will be configured to require this external ID. 
       You will need to configure WFM Adapter and RTA to supply this external ID when they assume 
       their roles. If Authorization Mode is User, this parameter will be ignored.
-  QSS3BucketName:
+  DeploymentS3BucketName:
     AllowedPattern: ^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$
-    ConstraintDescription: Quick Start bucket name can include numbers, lowercase
+    ConstraintDescription: Deployment bucket name can include numbers, lowercase
       letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen
       (-).
     Default: aspect-workforce
-    Description: S3 bucket name for the Quick Start assets. This string can include
+    Description: S3 bucket name for the deployment assets. This string can include
       numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start
       or end with a hyphen (-).
     Type: String
-  QSS3BucketRegion:
-    Default: 'us-east-1'
-    Description: 'The AWS Region where the Quick Start S3 bucket (QSS3BucketName) is hosted. When using your own bucket, you must specify this value.'
-    Type: String
-  QSS3KeyPrefix:
+  DeploymentS3KeyPrefix:
     AllowedPattern: ^[0-9a-zA-Z-/]*$
-    ConstraintDescription: Quick Start key prefix can include numbers, lowercase letters,
+    ConstraintDescription: Deployment key prefix can include numbers, lowercase letters,
       uppercase letters, hyphens (-), and forward slash (/).
     Default: aspect-workforce-connect-integration/
-    Description: S3 key prefix for the Quick Start assets. Quick Start key prefix
+    Description: S3 key prefix for the deployment assets. Deployment key prefix
       can include numbers, lowercase letters, uppercase letters, hyphens (-), and
       forward slash (/).
     Type: String
@@ -232,25 +225,19 @@ Rules:
         is Role.
     - Assert: !Not [!Equals [!Ref ExternalId, '']]
       AssertDescription: External ID is required when Authorization Mode is Role.
-Conditions:
-  UsingDefaultBucket: !Equals [!Ref QSS3BucketName, 'aspect-workforce']
 Resources:
   CreateStreamStack:
     Type: AWS::CloudFormation::Stack
     Properties:
       TemplateURL:
         !Sub
-          - 'https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/create-kinesis-stream.template.yaml'
-          - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
-            S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
+          - 'https://${DeploymentS3Bucket}.s3.${AWS::URLSuffix}/${DeploymentS3KeyPrefix}templates/create-kinesis-stream.template.yaml'
   ApStack:
     Type: AWS::CloudFormation::Stack
     Properties:
       TemplateURL:
         !Sub
-          - 'https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/aspect-wfm-ap-kda.template.yaml'
-          - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
-            S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
+          - 'https://${DeploymentS3Bucket}.s3.${AWS::URLSuffix}/${DeploymentS3KeyPrefix}templates/aspect-wfm-ap-kda.template.yaml'
       Parameters:
         FirehoseStreamName: !Ref FirehoseStreamName
         ApDataS3Prefix: !Ref ApDataS3Prefix
@@ -262,9 +249,8 @@ Resources:
         AuthorizationMode: !Ref AuthorizationMode
         SourceAwsAccountId: !Ref SourceAwsAccountId
         ExternalId: !Ref ExternalId
-        QSS3BucketName: !Ref QSS3BucketName
-        QSS3BucketRegion: !Ref QSS3BucketRegion
-        QSS3KeyPrefix: !Ref QSS3KeyPrefix
+        DeploymentS3BucketName: !Ref DeploymentS3BucketName
+        DeploymentS3KeyPrefix: !Ref DeploymentS3KeyPrefix
         AgentEventStreamArn:
           Fn::GetAtt:
           - CreateStreamStack
@@ -275,9 +261,7 @@ Resources:
     Properties:
       TemplateURL:
         !Sub
-          - 'https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/aspect-wfm-rta.template.yaml'
-          - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
-            S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
+          - 'https://${DeploymentS3Bucket}.s3.${AWS::URLSuffix}/${DeploymentS3KeyPrefix}templates/aspect-wfm-rta.template.yaml'
       Parameters:
         NumSQSQueues: !Ref NumSQSQueues
         LambdaConfigLocation: !Ref LambdaConfigLocation
@@ -287,9 +271,8 @@ Resources:
         AuthorizationMode: !Ref AuthorizationMode
         SourceAwsAccountId: !Ref SourceAwsAccountId
         ExternalId: !Ref ExternalId
-        QSS3BucketName: !Ref QSS3BucketName
-        QSS3BucketRegion: !Ref QSS3BucketRegion
-        QSS3KeyPrefix: !Ref QSS3KeyPrefix
+        DeploymentS3BucketName: !Ref DeploymentS3BucketName
+        DeploymentS3KeyPrefix: !Ref DeploymentS3KeyPrefix
         AgentEventStreamArn:
           Fn::GetAtt:
           - CreateStreamStack
