@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.10">
 <meta name="description" content="Aspect Workforce Deployment Guide on AWS">
-<meta name="keywords" content="Partner Solution, AWS, Aspect Workforce">
+<meta name="keywords" content="AWS, Aspect Workforce">
 <title>Aspect Workforce on AWS</title>
 <style>
 /* Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -875,7 +875,7 @@ p.footer-text a{color:#d7d8d8}
 <div id="preamble">
 <div class="sectionbody">
 <h2 id="_aspect_workforce_on_aws" class="discrete text-center">Aspect Workforce on AWS</h2>
-<h2 id="_partner_solution_deployment_guide" class="discrete text-left text-center">Partner Solution Deployment Guide</h2>
+<h2 id="_aspect_workforce_connect_integration_deployment_guide" class="discrete text-left text-center">Aspect Workforce Connect Integration Deployment Guide</h2>
 <div class="imageblock text-center">
 <div class="content">
 <img src="https://aws-quickstart.s3.amazonaws.com/docs/deployment-guide/aws-quickstart-deployment-graphic.png" alt="QS" width="80" height="80">
@@ -887,7 +887,7 @@ p.footer-text a{color:#d7d8d8}
 </div>
 <div class="imageblock text-left image-container">
 <div class="content">
-<img src="https://aws-quickstart.s3.amazonaws.com/aspect-workforce-connect-integration/docs/boilerplate/.images/aws-quickstart-graphic.png" alt="">
+<img src="https://aspect-workforce.s3.amazonaws.com/aspect-workforce-connect-integration/docs/boilerplate/.images/aws-quickstart-graphic.png" alt="">
 </div>
 </div>
 <div class="admonitionblock tip">
@@ -897,13 +897,13 @@ p.footer-text a{color:#d7d8d8}
 <i class="fa icon-tip" title="Tip"></i>
 </td>
 <td class="content">
-Refer to the <a href="https://github.com/AlvariaYF/aspect-workforce-connect-integration" target="_blank" rel="noopener">GitHub repository</a> to view source files, report bugs, submit feature ideas, and post feedback about this Partner Solution. To comment on the documentation, refer to <a href="#_feedback">Feedback</a>.
+Refer to the <a href="https://github.com/AlvariaYF/aspect-workforce-connect-integration" target="_blank" rel="noopener">GitHub repository</a> to view source files, report bugs, submit feature ideas, and post feedback about this integration. To comment on the documentation, refer to <a href="#_feedback">Feedback</a>.
 </td>
 </tr>
 </table>
 </div>
 <div class="paragraph text-left">
-<p>This Partner Solution was created by Alvaria Software in collaboration with Amazon Web Services (AWS). <a href="https://aws.amazon.com/solutions/partners/" target="_blank" rel="noopener">Partner Solutions</a> are automated reference deployments that help people deploy popular technologies on AWS according to AWS best practices. If you&#8217;re unfamiliar with AWS Partner Solutions, refer to the <a href="https://fwd.aws/rA69w?" target="_blank" rel="noopener">AWS Partner Solution General Information Guide</a>.</p>
+<p>This integration was created by Alvaria Software in collaboration with Amazon Web Services (AWS).</p>
 </div>
 </div>
 </div>
@@ -919,10 +919,12 @@ Refer to the <a href="https://github.com/AlvariaYF/aspect-workforce-connect-inte
 <p><strong>Agent Productivity</strong>: This option enhances standard Amazon Connect reports with agent-productivity statistics including average positions staffed (APS), available time, unavailable time, and sign-in/sign-out pairs. You may configure how Amazon Connect agent status labels (such as "break" or "project") should be counted in Aspect Workforce, as available, productive, signed-in, or signed-out.</p>
 </li>
 <li>
-<p><strong>Real-Time Adherence (RTA)</strong>: Choose this option to provide information about Amazon Connect agent state changes to Aspect RTA. Aspect RTA monitors Amazon Connect agent adherence to schedules.
-Both integration options use a single Amazon Connect agent event stream. You can choose to deploy the solution with a new or existing <a href="https://docs.aws.amazon.com/streams/latest/dev/introduction.html">Amazon Kinesis data stream</a> for this purpose. The deployment sizes the Kinesis data stream with a single shard. You can adjust the shard count for your agent event rate and number of consumers (agent productivity, RTA, or custom agent-event readers). For more information, refer to the <a href="https://help.aspect.com/go/aspect/premiseportfolio.wem.wfintamzconnectconfig.workforceintegrationamazonconnectconfig">Alvaria Workforce Integrations for Amazon Connect Configuration Guide</a>.</p>
+<p><strong>Real-Time Adherence (RTA)</strong>: Choose this option to provide information about Amazon Connect agent state changes to Aspect RTA. Aspect RTA monitors Amazon Connect agent adherence to schedules.</p>
 </li>
 </ul>
+</div>
+<div class="paragraph">
+<p>Both integration options use a single Amazon Connect agent event stream. You can choose to deploy the solution with a new or existing <a href="https://docs.aws.amazon.com/streams/latest/dev/introduction.html">Amazon Kinesis data stream</a> for this purpose. The deployment sizes the Kinesis data stream with a single shard. You can adjust the shard count for your agent event rate and number of consumers (agent productivity, RTA, or custom agent-event readers). For more information, refer to the <a href="https://help.aspect.com/go/aspect/premiseportfolio.wem.wfintamzconnectconfig.workforceintegrationamazonconnectconfig">Aspect Workforce Integrations for Amazon Connect Configuration Guide</a>.</p>
 </div>
 </div>
 </div>
@@ -938,7 +940,7 @@ Both integration options use a single Amazon Connect agent event stream. You can
 <h2 id="_architecture">Architecture</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Deploying <strong>Agent Productivity integration</strong> builds the following Aspect Workforce environment in the
+<p>Deploying the <strong>Agent Productivity integration</strong> builds the following environment in the
 AWS Cloud.</p>
 </div>
 <div id="architecture1" class="imageblock">
@@ -948,15 +950,18 @@ AWS Cloud.</p>
 <div class="title">Figure 1. Architecture for Aspect Workforce Agent Productivity integration on AWS</div>
 </div>
 <div class="paragraph">
-<p>As shown in <a href="#architecture1">Figure 1</a>, Agent Productivity integration sets up the following:</p>
+<p>As shown in <a href="#architecture1">Figure 1</a>, the Agent Productivity integration sets up the following:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>Amazon Connect to provide agent event stream read by a Kinesis AWS Lambda function.</p>
+<p>Amazon Connect to provide an agent event Kinesis data stream.</p>
 </li>
 <li>
-<p>Two Amazon Simple Storage Service (Amazon S3) buckets: one to store exported reports, and another for agent productivity data.</p>
+<p>Amazon Connect to export scheduled reports to a configured Amazon Simple Storage Service (Amazon S3) bucket.</p>
+</li>
+<li>
+<p>An Amazon Simple Storage Service (Amazon S3) bucket for agent productivity data.</p>
 </li>
 <li>
 <p>Two Lambda functions:</p>
@@ -977,6 +982,16 @@ AWS Cloud.</p>
 <li>
 <p>A Kinesis Data Firehouse output stream to write the output of the Lambda functions to the agent productivity S3 bucket.</p>
 </li>
+<li>
+<p>An AWS Identity and Access Management (IAM) user or role to provide WFM Adapter with the following (not shown):</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Read-only access to the exported reports and agent productivity data S3 buckets.</p>
+</li>
+</ul>
+</div>
+</li>
 </ul>
 </div>
 <div class="paragraph">
@@ -995,19 +1010,19 @@ AWS Cloud.</p>
 <div class="ulist">
 <ul>
 <li>
-<p>Amazon Connect to write events to an agent event data stream, which invokes an AWS Lambda function.</p>
+<p>Amazon Connect to write events to an agent event Kinesis data stream.</p>
 </li>
 <li>
-<p>A Lambda function, invoked by Amazon Connect, to update an Amazon DynamoDB table and Amazon SImple Queue Service (Amazon SQS) queue.</p>
+<p>A Kinesis Lambda function to read agent events form your Amazon Connect and then update an Amazon DynamoDB table and one or more Amazon Simple Queue Service (Amazon SQS) queues.</p>
 </li>
 <li>
 <p>A DynamoDB table to hold the latest state change for each agent signed into your Amazon Connect instance.</p>
 </li>
 <li>
-<p>An SQS queue to relay Amazon Connect agent state changes to Real-Time Adherence (RTA).</p>
+<p>One or more SQS queues to relay Amazon Connect agent state changes to Real-Time Adherence (RTA).</p>
 </li>
 <li>
-<p>An AWS Identity and Access Management (IAM) user to provide RTA with the following (not shown):</p>
+<p>An AWS Identity and Access Management (IAM) user or role to provide RTA with the following (not shown):</p>
 <div class="ulist">
 <ul>
 <li>
@@ -1050,12 +1065,10 @@ AWS Cloud.</p>
 <p><a href="https://console.aws.amazon.com/cloudformation/home#/stacks/quickcreate?stackName=Aspect-WF-Connect&amp;templateURL=https://aspect-workforce.s3.amazonaws.com/aspect-workforce-connect-integration/templates/aspect-wfm-ap-create-stream.template.yaml?">Deploy with Agent Productivity integration</a></p>
 </li>
 <li>
-<p><a href="https://console.aws.amazon.com/cloudformation/home#/stacks/quickcreate?stackName=Aspect-WF-Connect&amp;templateURL=https://aspect-workforce.s3.amazonaws.com/aspect-workforce-connect-integration/templates/aspect-wfm-rta-create-stream.template.yaml" class="bare">https://console.aws.amazon.com/cloudformation/home#/stacks/quickcreate?stackName=Aspect-WF-Connect&amp;templateURL=https://aspect-workforce.s3.amazonaws.com/aspect-workforce-connect-integration/templates/aspect-wfm-rta-create-stream.template.yaml</a>
-?[Deploy with Real-Time Adherence integration]</p>
+<p><a href="https://console.aws.amazon.com/cloudformation/home#/stacks/quickcreate?stackName=Aspect-WF-Connect&amp;templateURL=https://aspect-workforce.s3.amazonaws.com/aspect-workforce-connect-integration/templates/aspect-wfm-rta-create-stream.template.yaml?">Deploy with Real-Time Adherence integration</a></p>
 </li>
 <li>
-<p><a href="https://console.aws.amazon.com/cloudformation/home#/stacks/quickcreate?stackName=Aspect-WF-Connect&amp;templateURL=https://aspect-workforce.s3.amazonaws.com/aspect-workforce-connect-integration/templates/aspect-wfm-ap-and-rta-create-stream.template.yaml" class="bare">https://console.aws.amazon.com/cloudformation/home#/stacks/quickcreate?stackName=Aspect-WF-Connect&amp;templateURL=https://aspect-workforce.s3.amazonaws.com/aspect-workforce-connect-integration/templates/aspect-wfm-ap-and-rta-create-stream.template.yaml</a>
-?[Deploy with both integration options]</p>
+<p><a href="https://console.aws.amazon.com/cloudformation/home#/stacks/quickcreate?stackName=Aspect-WF-Connect&amp;templateURL=https://aspect-workforce.s3.amazonaws.com/aspect-workforce-connect-integration/templates/aspect-wfm-ap-and-rta-create-stream.template.yaml?">Deploy with both integration options</a></p>
 </li>
 </ul>
 </div>
@@ -1090,15 +1103,13 @@ AWS Cloud.</p>
 <div class="ulist">
 <ul>
 <li>
-<p><a href="https://console.aws.amazon.com/cloudformation/home#/stacks/quickcreate?stackName=Aspect-WF-Connect&amp;templateURL=https://aspect-workforce.s3.amazonaws.com/aspect-workforce-connect-integration/templates/aspect-wfm-ap.template.yaml" class="bare">https://console.aws.amazon.com/cloudformation/home#/stacks/quickcreate?stackName=Aspect-WF-Connect&amp;templateURL=https://aspect-workforce.s3.amazonaws.com/aspect-workforce-connect-integration/templates/aspect-wfm-ap.template.yaml</a>
-?[Deploy with Agent Productivity integration]</p>
+<p><a href="https://console.aws.amazon.com/cloudformation/home#/stacks/quickcreate?stackName=Aspect-WF-Connect&amp;templateURL=https://aspect-workforce.s3.amazonaws.com/aspect-workforce-connect-integration/templates/aspect-wfm-ap.template.yaml?">Deploy with Agent Productivity integration</a></p>
 </li>
 <li>
 <p><a href="https://console.aws.amazon.com/cloudformation/home#/stacks/quickcreate?stackName=Aspect-WF-Connect&amp;templateURL=https://aspect-workforce.s3.amazonaws.com/aspect-workforce-connect-integration/templates/aspect-wfm-rta.template.yaml?">Deploy with Real-Time Adherence integration</a></p>
 </li>
 <li>
-<p><a href="https://console.aws.amazon.com/cloudformation/home#/stacks/quickcreate?stackName=Aspect-WF-Connect&amp;templateURL=https://aspect-workforce.s3.amazonaws.com/aspect-workforce-connect-integration/templates/aspect-wfm-ap-and-rta.template.yaml" class="bare">https://console.aws.amazon.com/cloudformation/home#/stacks/quickcreate?stackName=Aspect-WF-Connect&amp;templateURL=https://aspect-workforce.s3.amazonaws.com/aspect-workforce-connect-integration/templates/aspect-wfm-ap-and-rta.template.yaml</a>
-?[Deploy with both integration options]</p>
+<p><a href="https://console.aws.amazon.com/cloudformation/home#/stacks/quickcreate?stackName=Aspect-WF-Connect&amp;templateURL=https://aspect-workforce.s3.amazonaws.com/aspect-workforce-connect-integration/templates/aspect-wfm-ap-and-rta.template.yaml?">Deploy with both integration options</a></p>
 </li>
 </ul>
 </div>
@@ -1114,7 +1125,7 @@ AWS Cloud.</p>
 <div class="olist arabic">
 <ol class="arabic">
 <li>
-<p>Sign in to your AWS account, and launch this Partner Solution, as described under <a href="#_deployment_options">Deployment options</a>. The AWS CloudFormation console opens with a prepopulated template.</p>
+<p>Sign in to your AWS account, and launch this integration, as described under <a href="#_deployment_options">Deployment options</a>. The AWS CloudFormation console opens with a prepopulated template.</p>
 </li>
 <li>
 <p>Choose the correct AWS Region, and then choose <strong>Next</strong>.</p>
@@ -1131,7 +1142,7 @@ AWS Cloud.</p>
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-Unless you&#8217;re customizing the Partner Solution templates or are instructed otherwise in this guide&#8217;s <strong>Predeployment</strong> section, don&#8217;t change the default settings for the following parameters: <code>QSS3BucketName</code>, <code>QSS3BucketRegion</code>, and <code>QSS3KeyPrefix</code>. Changing the values of these parameters will modify code references that point to the Amazon Simple Storage Service (Amazon S3) bucket name and key prefix. For more information, refer to the <a href="https://fwd.aws/NwqYA?" target="_blank" rel="noopener">AWS Partner Solutions Contributor&#8217;s Guide</a>.
+Unless you&#8217;re customizing the integration templates, don&#8217;t change the default settings for the following parameters: <code>DeploymentS3BucketName</code>  and <code>DeploymentS3KeyPrefix</code>. Changing the values of these parameters will modify code references that point to the Amazon Simple Storage Service (Amazon S3) bucket name and key prefix.
 </td>
 </tr>
 </table>
@@ -1168,7 +1179,7 @@ Unless you&#8217;re customizing the Partner Solution templates or are instructed
 <h2 id="_customer_responsibility">Customer responsibility</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>After you deploy a Partner Solution, confirm that your resources and services are updated and configured—including any required patches—to meet your security and other needs. For more information, refer to the <a href="https://aws.amazon.com/compliance/shared-responsibility-model/" target="_blank" rel="noopener">Shared Responsibility Model</a>.</p>
+<p>After you deploy this integration, confirm that your resources and services are updated and configured—including any required patches—to meet your security and other needs. For more information, refer to the <a href="https://aws.amazon.com/compliance/shared-responsibility-model/" target="_blank" rel="noopener">Shared Responsibility Model</a>.</p>
 </div>
 </div>
 </div>
@@ -1176,23 +1187,7 @@ Unless you&#8217;re customizing the Partner Solution templates or are instructed
 <h2 id="_feedback">Feedback</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>To submit feature ideas and report bugs, use the <strong>Issues</strong> section of the <a href="https://github.com/AlvariaYF/aspect-workforce-connect-integration" target="_blank" rel="noopener">GitHub repository</a> for this Partner Solution. To submit code, refer to the <a href="https://fwd.aws/NwqYA?" target="_blank" rel="noopener">Partner Solution Contributor&#8217;s Guide</a>. To submit feedback on this deployment guide, use the following GitHub links:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="https://github.com/AlvariaYF/aspect-workforce-connect-integration/issues/new?labels=documentation,grammar+or+spelling&amp;title=Deployment+guide+feedback&amp;body=Section+heading:%0ADocumentation+issue+description:%0A" target="_blank" rel="noopener">Grammar or spelling</a></p>
-</li>
-<li>
-<p><a href="https://github.com/AlvariaYF/aspect-workforce-connect-integration/issues/new?labels=documentation,broken+link&amp;title=Deployment+guide+feedback&amp;body=Section+heading:%0ADocumentation+issue+description:%0A" target="_blank" rel="noopener">Broken link</a></p>
-</li>
-<li>
-<p><a href="https://github.com/AlvariaYF/aspect-workforce-connect-integration/issues/new?labels=documentation,inaccurate+content&amp;title=Deployment+guide+feedback&amp;body=Section+heading:%0ADocumentation+issue+description:%0A" target="_blank" rel="noopener">Inaccurate content</a></p>
-</li>
-<li>
-<p><a href="https://github.com/AlvariaYF/aspect-workforce-connect-integration/issues/new?labels=documentation,display+and+design&amp;title=Deployment+guide+feedback&amp;body=Section+heading:%0ADocumentation+issue+description:%0A" target="_blank" rel="noopener">Display or design</a></p>
-</li>
-</ul>
+<p>To submit feature ideas and report bugs, use the <strong>Issues</strong> section of the <a href="https://github.com/AlvariaYF/aspect-workforce-connect-integration" target="_blank" rel="noopener">GitHub repository</a> for this integration.</p>
 </div>
 </div>
 </div>
