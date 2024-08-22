@@ -1,0 +1,1 @@
+// For instructions on creating deployment instructions, refer to "Create readmes for Terraform-based Partner Solutions" (https://aws-ia-us-west-2.s3.us-west-2.amazonaws.com/docs/content/index.html#/lessons/8rpYWWL59M7dcS-NsjYmaISUu-L_UqEv).
