@@ -1,26 +1,24 @@
-// Edit this placeholder text as necessary to describe the deployment options.
+The Aspect Workforce Connect Integration provides the following deployment options:
 
-This Partner Solution provides the following deployment options:
-
-=== Deploy Alvaria WFM with a new Kinesis data stream
+=== Deploy the integration with a new Kinesis data stream
 
 1. Sign in to your AWS account. If you don't have an account, sign up at https://aws.amazon.com. An AWS account automatically signs you up for Amazon Connect and all other AWS services.
 2. http://docs.aws.amazon.com/connect/latest/adminguide/gettingstarted.html#launch-contact-center[Create a new Amazon Connect instance] or https://console.aws.amazon.com/connect/[use an existing instance].
-3. Launch the Partner Solution. The stack takes a few minutes to deploy. Before you create the stack, choose the AWS Region of your Amazon Connect instance from the top toolbar. Choose one of the following options:
-* https://fwd.aws/rXVxr?[Deploy with agent productivity integration]
-* https://fwd.aws/vz4PA?[Deploy with Alvaria RTA integration]
-* https://fwd.aws/krMqr?[Deploy with both integration options]
+3. Deploy the integration. The stack takes a few minutes to deploy. Before you create the stack, choose the AWS Region of your Amazon Connect instance from the top toolbar. Choose one of the following options:
+* https://console.aws.amazon.com/cloudformation/home#/stacks/quickcreate?stackName=Aspect-WF-Connect&templateURL=https://aspect-workforce.s3.amazonaws.com/aspect-workforce-connect-integration/templates/aspect-wfm-ap-create-stream.template.yaml?[Deploy with Agent Productivity integration]
+* https://console.aws.amazon.com/cloudformation/home#/stacks/quickcreate?stackName=Aspect-WF-Connect&templateURL=https://aspect-workforce.s3.amazonaws.com/aspect-workforce-connect-integration/templates/aspect-wfm-rta-create-stream.template.yaml?[Deploy with Real-Time Adherence integration]
+* https://console.aws.amazon.com/cloudformation/home#/stacks/quickcreate?stackName=Aspect-WF-Connect&templateURL=https://aspect-workforce.s3.amazonaws.com/aspect-workforce-connect-integration/templates/aspect-wfm-ap-and-rta-create-stream.template.yaml?[Deploy with both integration options]
 [start=4]
 4. https://docs.aws.amazon.com/connect/latest/adminguide/data-streaming.html[Enable data streaming for your Amazon Connect instance].
 5. https://docs.aws.amazon.com/connect/latest/adminguide/agent-event-streams-enable.html[Enable agent event streams].
 
-=== Deploy Alvaria WFM with an existing Kinesis data stream
+=== Deploy the integration with an existing Kinesis data stream
 
 1. Sign in to your AWS account. If you don't have an account, sign up at https://aws.amazon.com. An AWS account automatically signs you up for Amazon Connect and all other AWS services.
 2. http://docs.aws.amazon.com/connect/latest/adminguide/gettingstarted.html#launch-contact-center[Create a new Amazon Connect instance] or https://console.aws.amazon.com/connect/[use an existing instance].
 3. https://docs.aws.amazon.com/connect/latest/adminguide/data-streaming.html[Enable data streaming for your Amazon Connect instance]. Ensure that you select your Kinesis data stream.
 4. In the https://us-east-1.console.aws.amazon.com/kinesis/[Amazon Kinesis Data Streams console], note the Amazon Resource Name (ARN) of the Kinesis data stream you select in step 3. Input the data stream ARN in the Agent Event Kinesis Stream ARN parameter during deployment.
-5. Launch the Partner Solution. The stack takes a few minutes to deploy. Before you create the stack, choose the AWS Region of your Amazon Connect instance from the top toolbar. Choose one of the following options:
-* https://fwd.aws/qWDeQ?[Deploy with agent productivity integration]
-* https://fwd.aws/KWkzd?[Deploy with Alvaria RTA integration]
-* https://fwd.aws/MQdDe?[Deploy with both integration options]
+5. Deploy the integration. The stack takes a few minutes to deploy. Before you create the stack, choose the AWS Region of your Amazon Connect instance from the top toolbar. Choose one of the following options:
+* https://console.aws.amazon.com/cloudformation/home#/stacks/quickcreate?stackName=Aspect-WF-Connect&templateURL=https://aspect-workforce.s3.amazonaws.com/aspect-workforce-connect-integration/templates/aspect-wfm-ap.template.yaml?[Deploy with Agent Productivity integration]
+* https://console.aws.amazon.com/cloudformation/home#/stacks/quickcreate?stackName=Aspect-WF-Connect&templateURL=https://aspect-workforce.s3.amazonaws.com/aspect-workforce-connect-integration/templates/aspect-wfm-rta.template.yaml?[Deploy with Real-Time Adherence integration]
+* https://console.aws.amazon.com/cloudformation/home#/stacks/quickcreate?stackName=Aspect-WF-Connect&templateURL=https://aspect-workforce.s3.amazonaws.com/aspect-workforce-connect-integration/templates/aspect-wfm-ap-and-rta.template.yaml?[Deploy with both integration options]

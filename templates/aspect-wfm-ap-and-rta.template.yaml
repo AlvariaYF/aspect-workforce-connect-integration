@@ -1,14 +1,14 @@
 ---
 AWSTemplateFormatVersion: '2010-09-09'
-Description: Alvaria WFM Agent Productivity Report Generator integration and Real-Time Adherence integration (qs-1s0oq6gs2)
+Description: Aspect Workforce Agent Productivity Report Generator integration and Real-Time Adherence integration
 Metadata:
   AWS::CloudFormation::Interface:
     ParameterGroups:
     - Label:
-        default: Alvaria WFM Configuration
+        default: Aspect Workforce Configuration
       Parameters:
       - FirehoseStreamName
-      - AlvariaApDataS3Prefix
+      - ApDataS3Prefix
       - StatusSeparator
       - SignedOutStatuses
       - NumSQSQueues
@@ -31,16 +31,15 @@ Metadata:
         - SourceAwsAccountId
         - ExternalId
     - Label:
-        default: AWS Quick Start configuration
+        default: Deployment Configuration
       Parameters:
-      - QSS3BucketName
-      - QSS3BucketRegion
-      - QSS3KeyPrefix
+      - DeploymentS3BucketName
+      - DeploymentS3KeyPrefix
     ParameterLabels:
       FirehoseStreamName:
-        default: Alvaria Kinesis Firehose Stream Name
-      AlvariaApDataS3Prefix:
-        default: Alvaria WFM Report Prefix
+        default: Kinesis Firehose Stream Name
+      ApDataS3Prefix:
+        default: Agent Productivity Report Prefix
       StatusSeparator:
         default: Agent Status Name Separator
       SignedOutStatuses:
@@ -71,12 +70,10 @@ Metadata:
         default: Source AWS Account ID
       ExternalId:
         default: External ID
-      QSS3BucketName:
-        default: Quick Start S3 Bucket Name
-      QSS3BucketRegion:
-        default: Quick Start S3 bucket region
-      QSS3KeyPrefix:
-        default: Quick Start S3 Key Prefix
+      DeploymentS3BucketName:
+        default: Deployment S3 Bucket Name
+      DeploymentS3KeyPrefix:
+        default: Deployment S3 Key Prefix
 Parameters:
   FirehoseStreamName:
     Type: String
@@ -93,10 +90,10 @@ Parameters:
       If you specify a different stream name, be sure to update the WFM Adapter configuration 
       for the corresponding data source to match your stream name, in the Firehose Report Mapping data
       source parameter.  Consult the WFM Adapter help for more information.
-  AlvariaApDataS3Prefix:
+  ApDataS3Prefix:
     Type: String
     Default: OUTPUT/
-    Description: Enter the prefix for Alvaria WFM Agent Productivity reports written
+    Description: Enter the prefix for Agent Productivity reports written
       to S3.  You should configure the corresponding WFM Adapter data source to match
       this value, in the Firehose Report Root Path data source parameter.
   StatusSeparator:
@@ -139,7 +136,7 @@ Parameters:
     Description: Enter the name of the Exported reports S3 bucket of your Amazon Connect instance.
   ConnectS3Prefix:
     Type: String
-    Default: connect/directory/Reports/Alvaria/
+    Default: connect/directory/Reports/Aspect/
     Description: Enter the prefix under which the exported reports read by WFM Adapter will be
       exported, in the Exported reports bucket of your Amazon Connect instance.
   ConnectS3KmsArn:
@@ -208,26 +205,22 @@ Parameters:
       Authorization Mode is Role, the roles will be configured to require this external ID. 
       You will need to configure WFM Adapter and RTA to supply this external ID when they assume 
       their roles. If Authorization Mode is User, this parameter will be ignored.
-  QSS3BucketName:
+  DeploymentS3BucketName:
     AllowedPattern: ^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$
-    ConstraintDescription: Quick Start bucket name can include numbers, lowercase
+    ConstraintDescription: Deployment bucket name can include numbers, lowercase
       letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen
       (-).
-    Default: aws-ia
-    Description: S3 bucket name for the Quick Start assets. This string can include
+    Default: aspect-workforce
+    Description: S3 bucket name for the deployment assets. This string can include
       numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start
       or end with a hyphen (-).
     Type: String
-  QSS3BucketRegion:
-    Default: 'us-east-1'
-    Description: 'The AWS Region where the Quick Start S3 bucket (QSS3BucketName) is hosted. When using your own bucket, you must specify this value.'
-    Type: String
-  QSS3KeyPrefix:
+  DeploymentS3KeyPrefix:
     AllowedPattern: ^[0-9a-zA-Z-/]*$
-    ConstraintDescription: Quick Start key prefix can include numbers, lowercase letters,
+    ConstraintDescription: Deployment key prefix can include numbers, lowercase letters,
       uppercase letters, hyphens (-), and forward slash (/).
-    Default: cfn-ps-connect-integration-aspect-wfm/
-    Description: S3 key prefix for the Quick Start assets. Quick Start key prefix
+    Default: aspect-workforce-connect-integration/
+    Description: S3 key prefix for the deployment assets. Deployment key prefix
       can include numbers, lowercase letters, uppercase letters, hyphens (-), and
       forward slash (/).
     Type: String
@@ -238,7 +231,7 @@ Rules:
         Fn::Not:
         - Fn::Equals:
           - Ref: ConnectS3Prefix
-          - connect/directory/Reports/Alvaria/
+          - connect/directory/Reports/Aspect/
       AssertDescription: Replace directory with the directory name of your Amazon Connect instance.
   RoleRequiredParameters:
     RuleCondition: !Equals [!Ref AuthorizationMode, 'Role']
@@ -248,20 +241,14 @@ Rules:
         is Role.
     - Assert: !Not [!Equals [!Ref ExternalId, '']]
       AssertDescription: External ID is required when Authorization Mode is Role.
-Conditions:
-  UsingDefaultBucket: !Equals [!Ref QSS3BucketName, 'aws-ia']
 Resources:
   ApStack:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL:
-        !Sub
-          - 'https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/aspect-wfm-ap-kda.template.yaml'
-          - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
-            S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
+      TemplateURL: !Sub 'https://${DeploymentS3BucketName}.s3.${AWS::URLSuffix}/${DeploymentS3KeyPrefix}templates/aspect-wfm-ap.template.yaml'
       Parameters:
         FirehoseStreamName: !Ref FirehoseStreamName
-        AlvariaApDataS3Prefix: !Ref AlvariaApDataS3Prefix
+        ApDataS3Prefix: !Ref ApDataS3Prefix
         StatusSeparator: !Ref StatusSeparator
         SignedOutStatuses: !Ref SignedOutStatuses
         ConnectS3Bucket: !Ref ConnectS3Bucket
@@ -272,17 +259,12 @@ Resources:
         AuthorizationMode: !Ref AuthorizationMode
         SourceAwsAccountId: !Ref SourceAwsAccountId
         ExternalId: !Ref ExternalId
-        QSS3BucketName: !Ref QSS3BucketName
-        QSS3BucketRegion: !Ref QSS3BucketRegion
-        QSS3KeyPrefix: !Ref QSS3KeyPrefix
+        DeploymentS3BucketName: !Ref DeploymentS3BucketName
+        DeploymentS3KeyPrefix: !Ref DeploymentS3KeyPrefix
   RtaStack:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL:
-        !Sub
-          - 'https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/aspect-wfm-rta.template.yaml'
-          - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
-            S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
+      TemplateURL: !Sub 'https://${DeploymentS3BucketName}.s3.${AWS::URLSuffix}/${DeploymentS3KeyPrefix}templates/aspect-wfm-rta.template.yaml'
       Parameters:
         AgentEventStreamArn: !Ref AgentEventStreamArn
         AgentEventStreamKmsArn: !Ref AgentEventStreamKmsArn
@@ -294,9 +276,8 @@ Resources:
         AuthorizationMode: !Ref AuthorizationMode
         SourceAwsAccountId: !Ref SourceAwsAccountId
         ExternalId: !Ref ExternalId
-        QSS3BucketName: !Ref QSS3BucketName
-        QSS3BucketRegion: !Ref QSS3BucketRegion
-        QSS3KeyPrefix: !Ref QSS3KeyPrefix
+        DeploymentS3BucketName: !Ref DeploymentS3BucketName
+        DeploymentS3KeyPrefix: !Ref DeploymentS3KeyPrefix
 Outputs:
   APS3BucketName:
     Value:

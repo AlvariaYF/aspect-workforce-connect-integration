@@ -1,0 +1,1 @@
+ The stack takes about {deployment_time} to deploy.

@@ -1,15 +1,15 @@
 ---
 AWSTemplateFormatVersion: '2010-09-09'
-Description: Alvaria WFM Agent Productivity Report Generator integration for Amazon
-  Connect (qs-1ohjcidec)
+Description: Aspect Workforce Agent Productivity Report Generator integration for Amazon
+  Connect
 Metadata:
   AWS::CloudFormation::Interface:
     ParameterGroups:
     - Label:
-        default: Alvaria WFM Configuration
+        default: Aspect Workforce Configuration
       Parameters:
       - FirehoseStreamName
-      - AlvariaApDataS3Prefix
+      - ApDataS3Prefix
       - StatusSeparator
       - SignedOutStatuses
     - Label:
@@ -27,16 +27,15 @@ Metadata:
         - SourceAwsAccountId
         - ExternalId
     - Label:
-        default: AWS Quick Start configuration
+        default: Deployment configuration
       Parameters:
-        - QSS3BucketName
-        - QSS3BucketRegion
-        - QSS3KeyPrefix
+        - DeploymentS3BucketName
+        - DeploymentS3KeyPrefix
     ParameterLabels:
       FirehoseStreamName:
-        default: Alvaria Kinesis Firehose Stream Name
-      AlvariaApDataS3Prefix:
-        default: Alvaria WFM Report Prefix
+        default: Kinesis Firehose Stream Name
+      ApDataS3Prefix:
+        default: Agent Productivity Report Prefix
       StatusSeparator:
         default: Agent Status Name Separator
       SignedOutStatuses:
@@ -57,12 +56,10 @@ Metadata:
         default: Source AWS Account ID
       ExternalId:
         default: External ID
-      QSS3BucketName:
-        default: Quick Start S3 Bucket Name
-      QSS3BucketRegion:
-        default: Quick Start S3 bucket region
-      QSS3KeyPrefix:
-        default: Quick Start S3 Key Prefix
+      DeploymentS3BucketName:
+        default: Deployment S3 Bucket Name
+      DeploymentS3KeyPrefix:
+        default: Deployment S3 Key Prefix
 Parameters:
   FirehoseStreamName:
     Type: String
@@ -79,10 +76,10 @@ Parameters:
       If you specify a different stream name, be sure to update the WFM Adapter configuration 
       for the corresponding data source to match your stream name, in the Firehose Report Mapping data
       source parameter.  Consult the WFM Adapter help for more information.
-  AlvariaApDataS3Prefix:
+  ApDataS3Prefix:
     Type: String
     Default: OUTPUT/
-    Description: Enter the prefix for Alvaria WFM Agent Productivity reports written
+    Description: Enter the prefix for Agent Productivity reports written
       to S3.  You should configure the corresponding WFM Adapter data source to match
       this value, in the Firehose Report Root Path data source parameter.
   StatusSeparator:
@@ -106,7 +103,7 @@ Parameters:
       instance.
   ConnectS3Prefix:
     Type: String
-    Default: connect/directory/Reports/Alvaria/
+    Default: connect/directory/Reports/Aspect/
     Description: Enter the prefix under which the exported reports read by WFM Adapter
       will be exported, in the Exported reports bucket of your Amazon Connect instance.
   ConnectS3KmsArn:
@@ -153,26 +150,22 @@ Parameters:
       Authorization Mode is Role, the role will be configured to require this external ID. 
       You will need to configure WFM Adapter to supply this external ID when it assumes the 
       role. If Authorization Mode is User, this parameter will be ignored.
-  QSS3BucketName:
+  DeploymentS3BucketName:
     AllowedPattern: ^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$
-    ConstraintDescription: Quick Start bucket name can include numbers, lowercase
+    ConstraintDescription: Deployment bucket name can include numbers, lowercase
       letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen
       (-).
-    Default: aws-ia
-    Description: S3 bucket name for the Quick Start assets. This string can include
+    Default: aspect-workforce
+    Description: S3 bucket name for the deployment assets. This string can include
       numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start
       or end with a hyphen (-).
     Type: String
-  QSS3BucketRegion:
-    Default: 'us-east-1'
-    Description: 'The AWS Region where the Quick Start S3 bucket (QSS3BucketName) is hosted. When using your own bucket, you must specify this value.'
-    Type: String
-  QSS3KeyPrefix:
+  DeploymentS3KeyPrefix:
     AllowedPattern: ^[0-9a-zA-Z-/]*$
-    ConstraintDescription: Quick Start key prefix can include numbers, lowercase letters,
+    ConstraintDescription: Deployment key prefix can include numbers, lowercase letters,
       uppercase letters, hyphens (-), and forward slash (/).
-    Default: cfn-ps-connect-integration-aspect-wfm/
-    Description: S3 key prefix for the Quick Start assets. Quick Start key prefix
+    Default: aspect-workforce-connect-integration/
+    Description: S3 key prefix for the deployment assets. Deployment key prefix
       can include numbers, lowercase letters, uppercase letters, hyphens (-), and
       forward slash (/).
     Type: String
@@ -183,7 +176,7 @@ Rules:
         Fn::Not:
         - Fn::Equals:
           - Ref: ConnectS3Prefix
-          - connect/directory/Reports/Alvaria/
+          - connect/directory/Reports/Aspect/
       AssertDescription: Replace directory with the directory name of your Amazon
         Connect instance.
   RoleRequiredParameters:
@@ -195,7 +188,6 @@ Rules:
     - Assert: !Not [!Equals [!Ref ExternalId, '']]
       AssertDescription: External ID is required when Authorization Mode is Role.
 Conditions:
-  UsingDefaultBucket: !Equals [!Ref QSS3BucketName, 'aws-ia']
   HasS3KmsKey: !Not [!Equals [!Ref ConnectS3KmsArn, '']]
   HasKinesisKmsKey: !Not [!Equals [!Ref AgentEventStreamKmsArn, '']]
   CreateUser: !Equals [!Ref AuthorizationMode, 'User']
@@ -207,15 +199,11 @@ Resources:
   CopyZipsTemplate:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL:
-        !Sub
-          - 'https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}submodules/lambda-copyzips/templates/copy-zips.template.yaml'
-          - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
-            S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
+      TemplateURL: !Sub 'https://${DeploymentS3BucketName}.s3.${AWS::URLSuffix}/${DeploymentS3KeyPrefix}submodules/lambda-copyzips/templates/copy-zips.template.yaml'
       Parameters:
-        QSS3BucketName: !Ref QSS3BucketName
-        QSS3BucketRegion: !Ref QSS3BucketRegion
-        QSS3KeyPrefix: !Ref QSS3KeyPrefix
+        QSS3BucketName: !Ref DeploymentS3BucketName
+        QSS3BucketRegion: 'us-east-1'
+        QSS3KeyPrefix: !Ref DeploymentS3KeyPrefix
         SourceObjects: "functions/packages/agent-productivity-update/lambda.zip,functions/packages/agent-productivity-kinesis/APKinesisLambda.zip"
   FirehoseRole:
     Type: AWS::IAM::Role
@@ -261,7 +249,7 @@ Resources:
           - s3:PutObject
           Resource:
           - Fn::Sub: arn:${AWS::Partition}:s3:::${S3Bucket}
-          - Fn::Sub: arn:${AWS::Partition}:s3:::${S3Bucket}/${AlvariaApDataS3Prefix}*
+          - Fn::Sub: arn:${AWS::Partition}:s3:::${S3Bucket}/${ApDataS3Prefix}*
       Roles:
       - Ref: FirehoseRole
   FirehoseLogsPolicy:
@@ -293,7 +281,7 @@ Resources:
           SizeInMBs: 5
         CompressionFormat: UNCOMPRESSED
         Prefix:
-          Fn::Sub: ${AlvariaApDataS3Prefix}
+          Fn::Sub: ${ApDataS3Prefix}
         RoleARN:
           Fn::GetAtt: FirehoseRole.Arn
   UpdateLambdaRole:
@@ -336,7 +324,7 @@ Resources:
         that files are created
       Code:
         S3Bucket: !GetAtt CopyZipsTemplate.Outputs.LambdaZipsBucket
-        S3Key: !Sub '${QSS3KeyPrefix}functions/packages/agent-productivity-update/lambda.zip'
+        S3Key: !Sub '${DeploymentS3KeyPrefix}functions/packages/agent-productivity-update/lambda.zip'
       Environment:
         Variables:
           firehose_stream_name:
@@ -408,7 +396,7 @@ Resources:
       Runtime: dotnet8
       Code:
         S3Bucket: !GetAtt CopyZipsTemplate.Outputs.LambdaZipsBucket
-        S3Key: !Sub '${QSS3KeyPrefix}functions/packages/agent-productivity-kinesis/APKinesisLambda.zip'
+        S3Key: !Sub '${DeploymentS3KeyPrefix}functions/packages/agent-productivity-kinesis/APKinesisLambda.zip'
       Description: Classifies agent events as signed-in, signed-out, or available time. Relevant information
         is parsed out of the agent event and written in a CSV line to the Kinesis Firehose stream.
       MemorySize: 256
@@ -439,10 +427,7 @@ Resources:
         Statement:
         - Effect: Allow
           Principal:
-            AWS: 
-              !Sub
-                - "arn:aws:iam::${accountId}:root"
-                - accountId: !Ref SourceAwsAccountId
+            AWS: !Sub "arn:aws:iam::${SourceAwsAccountId}:root"
           Action: sts:AssumeRole
           Condition: 
             StringEquals:
@@ -466,7 +451,7 @@ Resources:
           - s3:ListBucket
           Resource:
           - Fn::GetAtt: S3Bucket.Arn
-          - Fn::Sub: ${S3Bucket.Arn}/${AlvariaApDataS3Prefix}*
+          - Fn::Sub: ${S3Bucket.Arn}/${ApDataS3Prefix}*
           - Fn::Sub: arn:${AWS::Partition}:s3:::${ConnectS3Bucket}
           - Fn::Sub: arn:${AWS::Partition}:s3:::${ConnectS3Bucket}/${ConnectS3Prefix}*
   WFMAdapterDecryptS3Policy:

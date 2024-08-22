@@ -1,5 +1,5 @@
 project:
-  name: cfn-ps-connect-integration-aspect-wfm
+  name: aspect-workforce-connect-integration
   owner: support@alvaria.com
   package_lambda: false
   regions:

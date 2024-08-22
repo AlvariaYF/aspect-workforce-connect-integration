@@ -1,0 +1,11 @@
+:label_documentation: documentation
+:label_spelling: grammar+or+spelling
+:label_broken_link: broken+link
+:label_inaccurate_content: inaccurate+content
+:label_display_design: display+and+design
+:issue_title: Deployment+guide+feedback
+:issue_body: Section+heading:%0ADocumentation+issue+description:%0A
+
+== Feedback
+
+To submit feature ideas and report bugs, use the *Issues* section of the https://github.com/{partner-solution-github-org}/{partner-solution-project-name}[GitHub repository^] for this integration.
