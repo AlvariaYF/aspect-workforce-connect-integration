@@ -19,8 +19,7 @@ tests:
       AuthorizationMode: User
       SourceAwsAccountId: ''
       ExternalId: ''
-      QSS3BucketName: $[taskcat_autobucket]
-      QSS3BucketRegion: $[taskcat_current_region]
+      DeploymentS3BucketName: $[taskcat_autobucket]
     regions:
     - us-east-1
     - us-west-2
