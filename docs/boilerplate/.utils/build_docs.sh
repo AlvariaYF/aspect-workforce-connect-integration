@@ -40,7 +40,7 @@ if test -f "$DEPLOYMENTFILE"; then
 #     fi
 
     build_guide_with_asciidoc_attributes
-    mv docs/${OUTPUT_FILE} $(pwd)/
+    mv docs/${OUTPUT_FILE} ./${OUTPUT_FILE}
 
     if test -n ${BUILD_PREVIEW_GUIDE}; then
         BPG=${BUILD_PREVIEW_GUIDE}
@@ -49,7 +49,7 @@ if test -f "$DEPLOYMENTFILE"; then
         OUTPUT_FILE=prod_example.html
 
         build_guide_with_asciidoc_attributes
-        mv docs/${OUTPUT_FILE} $(pwd)/
+        mv docs/${OUTPUT_FILE} ./${OUTPUT_FILE}
 
         BUILD_PREVIEW_GUIDE=${BPG}
     fi
@@ -72,10 +72,10 @@ if test -f "$OPERATIONALFILE"; then
     build_guide_with_asciidoc_attributes
 
     if [ ! -d "$(pwd)/operational" ]; then
-        mkdir $(pwd)/operational
+        mkdir ./operational
     fi
 
-    mv docs/${OUTPUT_FILE} $(pwd)/operational/
+    mv docs/${OUTPUT_FILE} ./operational/
 fi
 
 # Check for migration guide
@@ -94,9 +94,9 @@ if test -f "$MIGRATIONFILE"; then
     build_guide_with_asciidoc_attributes
 
     if [ ! -d "$(pwd)/migration" ]; then
-        mkdir $(pwd)/migration
+        mkdir ./migration
     fi
 
-    mv docs/${OUTPUT_FILE} $(pwd)/migration/
+    mv docs/${OUTPUT_FILE} ./migration/
 
 fi
