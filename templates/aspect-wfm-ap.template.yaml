@@ -386,6 +386,23 @@ Resources:
           - firehose:PutRecord
           Resource:
           - Fn::Sub: arn:${AWS::Partition}:firehose:${AWS::Region}:${AWS::AccountId}:deliverystream/${OutputKinesisFirehose}
+  KinesisLambdaDecryptKinesisPolicy:
+    Condition: HasKinesisKmsKey
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: KinesisLambda_DecryptKinesisPolicy
+      Roles:
+      - !Ref KinesisLambdaRole
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Action:
+          - kms:Decrypt
+          - kms:DescribeKey
+          - kms:GenerateDataKey
+          Resource:
+          - !Ref AgentEventStreamKmsArn
   KinesisLambdaFunction:
     Type: AWS::Lambda::Function
     DependsOn:
