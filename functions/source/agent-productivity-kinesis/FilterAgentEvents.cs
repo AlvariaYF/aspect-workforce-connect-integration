@@ -138,7 +138,7 @@ namespace APKinesisLambda
 
         private string? BuildCSVLine(AgentEvent? agentEvent) 
         {
-            if (agentEvent != null)
+            if (agentEvent != null && agentEvent.CurrentAgentSnapshot != null)
             {
                 var csvLine = new StringBuilder();
                 AddCSVField(csvLine, agentEvent?.AWSAccountID);
