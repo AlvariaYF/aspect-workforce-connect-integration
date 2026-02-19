@@ -11,9 +11,11 @@ tests:
       SignedOutStatuses: ''
       NumSQSQueues: 1
       LambdaConfigLocation: tab
+      MetricSource: S3
       ConnectS3Bucket: tcat-$[taskcat_random-string]
       ConnectS3Prefix: tcat-$[taskcat_random-string]/
       ConnectS3KmsArn: ''
+      ConnectInstanceArn: ''
       AHGFilterLevel: 0
       AHGFilterValues: ''
       AuthorizationMode: User
