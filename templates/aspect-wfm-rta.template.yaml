@@ -441,7 +441,7 @@ Resources:
     Properties:
       Handler: >-
         AspectKinesisLamda::AspectKinesisLamda.ProcessKinesisEvents::AspectKinesisHandler
-      Runtime: dotnet8
+      Runtime: dotnet10
       Code:
         S3Bucket: !GetAtt CopyZipsTemplate.Outputs.LambdaZipsBucket
         S3Key: !Sub '${DeploymentS3KeyPrefix}functions/packages/real-time-adherence/AspectKinesisLambda.zip'

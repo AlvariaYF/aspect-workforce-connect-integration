@@ -370,7 +370,7 @@ Resources:
           firehose_stream_name:
             Ref: OutputKinesisFirehose
       Handler: update.lambda_handler
-      Runtime: python3.12
+      Runtime: python3.14
       Role:
         Fn::GetAtt: UpdateLambdaRole.Arn
   UpdateLambdaVersion:
@@ -450,7 +450,7 @@ Resources:
     Properties:
       Handler: >-
         APKinesisLambda::APKinesisLambda.FilterAgentEvents::APKinesisHandler
-      Runtime: dotnet8
+      Runtime: dotnet10
       Code:
         S3Bucket: !GetAtt CopyZipsTemplate.Outputs.LambdaZipsBucket
         S3Key: !Sub '${DeploymentS3KeyPrefix}functions/packages/agent-productivity-kinesis/APKinesisLambda.zip'
