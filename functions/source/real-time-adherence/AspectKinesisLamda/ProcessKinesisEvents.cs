@@ -58,15 +58,20 @@ namespace AspectKinesisLamda
             }
             _dynamoDbTableName = _dynamoDbTableName.Trim();
             AWSConfigsDynamoDB.Context.TypeMappings[typeof(ConnectKinesisEventRecord)] = new Amazon.Util.TypeMapping(typeof(ConnectKinesisEventRecord), _dynamoDbTableName);
-            var aeConfig = new DynamoDBContextConfig { Conversion = DynamoDBEntryConversion.V2 };
-            _aeDbContext = new DynamoDBContext(new AmazonDynamoDBClient(), aeConfig);
+            var contextBuilder = new DynamoDBContextBuilder();
+            _aeDbContext = new DynamoDBContextBuilder()
+                .ConfigureContext(cfg => cfg.Conversion = DynamoDBEntryConversion.V2)
+                .WithDynamoDBClient(() => new AmazonDynamoDBClient())
+                .Build();
             _configTableName = Environment.GetEnvironmentVariable(CONFIG_TABLE_NAME_ENVIRONMENT_VARIABLE_LOOKUP);
             if (!string.IsNullOrEmpty(_configTableName))
             {
                 _configTableName = _configTableName.Trim();
                 AWSConfigsDynamoDB.Context.TypeMappings[typeof(ConfigRecord)] = new Amazon.Util.TypeMapping(typeof(ConfigRecord), _configTableName);
-                var cfgConfig = new DynamoDBContextConfig { Conversion = DynamoDBEntryConversion.V2 };
-                _cfgDbContext = new DynamoDBContext(new AmazonDynamoDBClient(), cfgConfig);
+                _cfgDbContext = new DynamoDBContextBuilder()
+                    .ConfigureContext(cfg => cfg.Conversion = DynamoDBEntryConversion.V2)
+                    .WithDynamoDBClient(() => new AmazonDynamoDBClient())
+                    .Build();
             }
             else
                 _cfgDbContext = null;
