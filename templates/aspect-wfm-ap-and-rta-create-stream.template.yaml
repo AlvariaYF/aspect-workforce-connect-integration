@@ -16,9 +16,11 @@ Metadata:
     - Label:
         default: Amazon Connect Configuration
       Parameters:
+      - MetricSource
       - ConnectS3Bucket
       - ConnectS3Prefix
       - ConnectS3KmsArn
+      - ConnectInstanceArn
       - AHGFilterLevel
       - AHGFilterSeparator
       - AHGFilterValues
@@ -46,12 +48,16 @@ Metadata:
         default: Number of SQS Queues
       LambdaConfigLocation:
         default: Write to SQS Flag Location
+      MetricSource:
+        default: Amazon Connect Metric Source
       ConnectS3Bucket:
         default: Amazon Connect Exported Reports Bucket
       ConnectS3Prefix:
         default: Amazon Connect Exported Reports Prefix
       ConnectS3KmsArn:
         default: Amazon Connect Exported Reports Bucket KMS Key ARN
+      ConnectInstanceArn:
+        default: Amazon Connect Instance ARN
       AHGFilterLevel:
         default: Agent Hierarchy Group Level
       AHGFilterSeparator:
@@ -125,14 +131,27 @@ Parameters:
     AllowedValues:
       - env
       - tab
+  MetricSource:
+    Type: String
+    Description: Select S3 if WFM Adapter should calculate statistics by querying Exported
+      S3 reports. Select API if WFM Adapter should calculate statistics by calling Connect
+      web services. If you select S3, you should create an Amazon Connect data source in
+      the WFM Adapter UI. If you select API, you should create an Amazon Connect (API)
+      data source in the WFM Adapter UI.
+    Default: S3
+    AllowedValues:
+      - S3
+      - API
   ConnectS3Bucket:
     Type: String
-    Description: Enter the name of the Exported reports S3 bucket of your Amazon Connect instance.
+    Description: Enter the name of the Exported reports S3 bucket of your Amazon Connect
+      instance. This parameter is required if Amazon Connect Metric Source is S3.
   ConnectS3Prefix:
     Type: String
     Default: connect/directory/Reports/Aspect/
-    Description: Enter the prefix under which the exported reports read by WFM Adapter will be
-      exported, in the Exported reports bucket of your Amazon Connect instance.
+    Description: Enter the prefix under which the exported reports read by WFM Adapter
+      will be exported, in the Exported reports bucket of your Amazon Connect instance.
+      This parameter is required if Amazon Connect Metric Source is S3.
   ConnectS3KmsArn:
     Type: String
     Description: Optional Amazon Resource Name (ARN) of the KMS key required to decrypt
@@ -140,6 +159,10 @@ Parameters:
       if you configured your exported reports bucket to use server-side encryption with an
       AWS Key Management Service (KMS) key. Otherwise, you should leave this parameter
       blank.
+  ConnectInstanceArn:
+    Type: String
+    Description: Amazon Resource Name (ARN) of the Amazon Connect instance. This parameter
+      is required if Amazon Connect Metric Source is API.
   AHGFilterLevel:
     Description: The Agent Hierarchy Group Level on which agent events should be filtered (must be between 0 and 5).
       Configuring a value of 0 disables filtering. Configuring a value between 1 and 5 means that agent events will
@@ -209,14 +232,31 @@ Parameters:
       forward slash (/).
     Type: String
 Rules:
+  S3RequiredParameters:
+    RuleCondition: !Equals [!Ref MetricSource, 'S3']
+    Assertions:
+    - Assert: !Not [!Equals [!Ref ConnectS3Bucket, '']]
+      AssertDescription: Amazon Connect Exported Reports Bucket is required when
+        Amazon Connect Metric Source is S3.
+    - Assert: !Not [!Equals [!Ref ConnectS3Prefix, '']]
+      AssertDescription: Amazon Connect Exported Reports Prefix is required when
+        Amazon Connect Metric Source is S3.
+  APIRequiredParameters:
+    RuleCondition: !Equals [!Ref MetricSource, 'API']
+    Assertions:
+    - Assert: !Not [!Equals [!Ref ConnectInstanceArn, '']]
+      AssertDescription: Amazon Connect Instance ARN is required when
+        Amazon Connect Metric Source is API.
   ParameterDefaults:
+    RuleCondition: !Equals [!Ref MetricSource, 'S3']
     Assertions:
     - Assert:
         Fn::Not:
         - Fn::Equals:
           - Ref: ConnectS3Prefix
           - connect/directory/Reports/Aspect/
-      AssertDescription: Replace directory with the directory name of your Amazon Connect instance.
+      AssertDescription: Replace directory with the directory name of your Amazon
+        Connect instance.
   RoleRequiredParameters:
     RuleCondition: !Equals [!Ref AuthorizationMode, 'Role']
     Assertions:
@@ -239,9 +279,11 @@ Resources:
         ApDataS3Prefix: !Ref ApDataS3Prefix
         StatusSeparator: !Ref StatusSeparator
         SignedOutStatuses: !Ref SignedOutStatuses
+        MetricSource: !Ref MetricSource
         ConnectS3Bucket: !Ref ConnectS3Bucket
         ConnectS3Prefix: !Ref ConnectS3Prefix
         ConnectS3KmsArn: !Ref ConnectS3KmsArn
+        ConnectInstanceArn: !Ref ConnectInstanceArn
         AuthorizationMode: !Ref AuthorizationMode
         SourceAwsAccountId: !Ref SourceAwsAccountId
         ExternalId: !Ref ExternalId
